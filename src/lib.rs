@@ -312,3 +312,82 @@ fn test_12_decode() {
         ["a", "a", "a", "a", "b", "c", "c", "a", "a", "d", "e", "e", "e", "e"]
     )
 }
+
+/// 13. Run-length encoding of a list (direct solution). (medium)
+pub fn encode_direct() {
+    // TODO: switch with problem 11
+    todo!()
+}
+
+/// 14. Duplicate the elements of a list. (easy)
+pub fn duplicate<T: Copy>(slice: &[T]) -> Vec<T> {
+    fn inner<T: Copy>(slice: &[T], mut list: Vec<T>) -> Vec<T> {
+        match slice {
+            [] => list,
+            [a, rest @ ..] => {
+                list.push(*a);
+                list.push(*a);
+                inner(rest, list)
+            }
+        }
+    }
+    inner(slice, vec![])
+}
+
+#[test]
+fn test_14_duplicate() {
+    assert_eq!(
+        duplicate(&["a", "b", "c", "c", "d"]),
+        ["a", "a", "b", "b", "c", "c", "c", "c", "d", "d"]
+    )
+}
+
+/// 15. Replicate the elements of a list a given number of times. (medium)
+pub fn replicate<T: Copy>(slice: &[T], n: usize) -> Vec<T> {
+    fn inner<T: Copy>(slice: &[T], mut list: Vec<T>, n: usize) -> Vec<T> {
+        match slice {
+            [] => list,
+            _ if n == 0 => list,
+            [a] => {
+                list.push(*a);
+                inner(slice, list, n - 1)
+            }
+            [a, rest @ ..] => {
+                list = inner(&[*a], list, n);
+                inner(rest, list, n)
+            }
+        }
+    }
+    inner(slice, vec![], n)
+}
+
+#[test]
+fn test_15_replicate() {
+    assert_eq!(
+        replicate(&["a", "b", "c"], 3),
+        ["a", "a", "a", "b", "b", "b", "c", "c", "c"]
+    )
+}
+
+/// 16. Drop every N'th element from a list. (medium)
+pub fn dropn<T: Copy>(slice: &[T], n: usize) -> Vec<T> {
+    fn inner<T: Copy>(slice: &[T], mut list: Vec<T>, n: usize, m: usize) -> Vec<T> {
+        match (slice, n) {
+            ([], _) => list,
+            ([a, rest @ ..], 2..) => {
+                list.push(*a);
+                inner(rest, list, n - 1, m)
+            }
+            ([_, rest @ ..], _) => inner(rest, list, m, m),
+        }
+    }
+    inner(slice, vec![], n, n)
+}
+
+#[test]
+fn test_16_dropn() {
+    assert_eq!(
+        dropn(&["a", "b", "c", "d", "e", "f", "g", "h", "i", "j"], 3),
+        ["a", "b", "d", "e", "g", "h", "j"]
+    )
+}
